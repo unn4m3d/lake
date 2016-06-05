@@ -38,7 +38,7 @@ end
 
 if Lake::Opts.list then
   puts "[INFO] Available targets :"
-  puts "\t"+$targets.keys.where{|e|! e.flags[:hidden]}.join("\n\t")
+  puts "\t"+$targets.keys.select{|e|! $targets[e.to_s].flags[:hidden]}.join("\n\t")
 else
   puts "[INFO] Target is #{Lake::Opts.target}"
   Lake::build_t Lake::Opts.target
