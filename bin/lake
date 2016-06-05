@@ -1,0 +1,47 @@
+#!/usr/bin/ruby
+
+require 'optparse'
+require 'lake'
+
+class Lake::Opts
+  class << self
+    attr_accessor :file,:target,:list,:show
+  end
+end
+
+Lake::Opts.file = "./Lakefile"
+
+OptionParser.new do |o|
+  o.banner = "Lake - Make-style build system\n\n\tUsage : lake [-f file] [-Tvh] [target]"
+  o.on("-fFILE","--file=FILE","Specify a file"){|f|Lake::Opts.file=f}
+  o.on("-T","--list","List targets"){Lake::Opts.list=true}
+  o.on("-v","--version","Print version and exit"){puts "Lake v #{Lake::VERSION}"; exit}
+  o.on("-h","--help","Print this help"){puts o; exit}
+  o.on("-l","--code","Show code before executing"){Lake::Opts.show=true}
+end.parse!
+
+Lake::Opts.target = ARGV.pop || "all"
+
+puts "[INFO] Lake started"
+puts "[INFO] File is : #{File.expand_path Lake::Opts.file}"
+if File.exists? File.expand_path Lake::Opts.file
+  code = "require 'lake'\ninclude Lake\n"+File.read(File.expand_path(Lake::Opts.file))
+  if Lake::Opts.show
+    puts code
+    2.times do puts end
+  end
+  Dir.chdir File.dirname File.expand_path Lake::Opts.file
+  eval code
+else
+  puts "[FATAL] File not found"
+end
+
+if Lake::Opts.list then
+  puts "[INFO] Available targets :"
+  puts "\t"+$targets.keys.where{|e|! e.flags[:hidden]}.join("\n\t")
+else
+  puts "[INFO] Target is #{Lake::Opts.target}"
+  Lake::build_t Lake::Opts.target
+end
+
+puts "[INFO] Done!"

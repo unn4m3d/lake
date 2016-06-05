@@ -1,0 +1,27 @@
+def define_version
+  File.read("./lake.gemspec").match(/\.version\s*=\s*'(?<ver>[\d\.]+)'/)[:ver]
+end
+
+
+hidden target("version"){
+  $version = define_version
+}
+
+hidden target("hidden_test"){
+  puts "[INFO] `hidden` keyword test passed"
+}
+
+mandatory hidden target("mandatory_test"){
+  puts "[INFO] `mandatory` keyword test passed"
+}
+
+unchecked target("all"){
+  system "gem build ./lake.gemspec"
+}
+
+target "install", "all", "version" do
+  puts "[INFO] Version is #{$version}"
+  system "gem install ./lake-#{$version}.gem"
+end
+
+unchecked target "test","hidden_test"
