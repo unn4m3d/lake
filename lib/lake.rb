@@ -1,7 +1,7 @@
 $targets = {}
 
 module Lake
-  VERSION='0.1.4 Beta'
+  VERSION='0.1.5 Beta'
   Target = Struct.new(:name,:proc,:deps,:flags) do
     def build
       if need_build? then
