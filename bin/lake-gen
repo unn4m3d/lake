@@ -1,0 +1,76 @@
+#!/usr/bin/ruby
+
+require 'lake/utils'
+require 'lake/gen'
+require 'optparse'
+require 'open-uri'
+
+class Opts
+  class << self
+    attr_accessor :out,:install
+  end
+end
+
+OptionParser.new do |o|
+  o.banner = "LakeGen"
+  o.on("-nNAME","--name=NAME","Set file name"){
+    |name|
+    Opts.out = name
+  }
+  o.on("-l","--list","List available templates and exit"){
+    puts "[INFO] Available templates:"
+    Dir.chdir(Dir.home) do
+      Dir.mkdir(".lake-gen") unless File.exists? ".lake-gen"
+      Dir.chdir(".lake-gen") do
+        puts Dir.glob("**/*.erb").map{|e| File.basename(e,".erb")}.join("\n\t")
+      end
+    end
+    exit
+  }
+  o.on("-iURL","--install=URL","Install template and exit"){
+    |url|
+    puts "[INFO] Install mode enabled"
+    Opts.install = url
+  }
+  o.on("-h","--help","Print this help"){puts o; exit}
+end.parse!
+
+def p_usage
+  puts "Usage:\n\tlake-gen (-h|--help) # Print this help"
+  puts "\tlake-gen (-i|--install) <url> [(-n|--name) <name>] # Download template <url> [and install as <name>]"
+  puts "\tlake-gen (-l|--list) # List templates"
+  puts "\tlake-gen [(-n|--name) <name>] <template> <arg1> ... <argN> # Generate file [and save as <name>"
+end
+
+def try_render(inp,out,argv)
+  content = ""
+  Dir.chdir(Dir.home) do
+    Dir.mkdir(".lake-gen") unless File.exists? ".lake-gen"
+    Dir.chdir(".lake-gen") do
+      if File.exists? inp then
+        content = File.read inp
+      else
+        puts "[FATAL] Cannot find #{inp}"
+        exit 1
+      end
+    end
+  end
+  Lake::Gen::render_template(content,argv,out)
+end
+
+if Opts.install then
+  puts "[INFO] Installing #{Opts.install}"
+  file = Opts.install
+  Opts.out ||= File.basename(file,".erb")
+  File.open(File.join(Dir.home,".lake-gen",Opts.out),"w"){
+    |f|
+    f.write File.read(file)
+  }
+  puts "[INFO] Successfully installed #{Opts.out}"
+elsif ARGV.size > 0
+  file = ARGV.shift
+  Opts.out ||= File.basename(file,".erb")
+  try_render file, Opts.out, ARGV
+else
+  p_usage
+end

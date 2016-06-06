@@ -1,26 +1,37 @@
 $targets = {}
 
 module Lake
-  VERSION='0.1.0 Beta'
+  VERSION='0.1.4 Beta'
   Target = Struct.new(:name,:proc,:deps,:flags) do
     def build
-      for d in deps
-        if proc or need_build?
-          $targets[d.to_s].build if $targets[d.to_s] 
-        else
-          puts "[INFO] #{d} is already built"
-        end
+      if need_build? then
+        puts "[INFO] Building #{name}"
+        deps.each{
+          |e|
+          $targets[e.to_s].build
+        }
+        proc.call if proc
+      else
+        puts "[INFO] #{name} is already built"
       end
-      puts "[INFO] Building #{name}"
-      proc.call if proc
     end
 
     def need_build?
       for dep in deps do
-        return true if not $targets[dep.to_s] and File.exists? dep.to_s
-        return true if $targets[dep.to_s] and $targets[dep.to_s].need_build?
+        #return true if not $targets[dep.to_s] and not File.exists? dep.to_s
+        #return true if $targets[dep.to_s] and $targets[dep.to_s].need_build?
+        if $targets[dep.to_s] then
+          return true if $targets[dep.to_s].need_build?
+        else
+          return true unless File.exists? dep.to_s
+        end
       end
-      (!dep)||(!File.exists? dep)||(flags[:unchecked])
+      return true if flags[:unchecked]
+      if flags[:virtual] then
+        return false
+      else
+        return ! File.exists? name.to_s
+      end
     end
   end
 
@@ -55,6 +66,10 @@ module Lake
   def mandatory(name)
     $targets[name].flags[:mandatory] = true
     return name
+  end
+
+  def virtual(name)
+    $targets[name].flags[:virtual] = true
   end
 
   def use(*plugin)

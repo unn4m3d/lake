@@ -7,7 +7,7 @@ Examples
 --
 
 ```ruby
-target "lake-1.0.0.gem", "dependency1","dependency2" do
+target "lake-0.1.4.gem", "dependency1","dependency2" do
   # Ruby code that executes if targeted or in case of unsatisfied dependencies
   # Existance of file "lake-1.0.0.gem" is also a dependency
 end
@@ -17,16 +17,21 @@ mandatory target(:check){
 }
 
 unchecked target(:always_build){
-  # Ruby code that executes even if built target exists
+  # Ruby code that executes even if built target exists and dependencies are built
+}
+
+virtual target(:virtual){
+  # Ruby code that executes if there is a dependency needs build, but makes no sense for target file existance
 }
 
 hidden target(:something,:always_build){
   #This target won't be listed in list (lake -T)
   #Also, it cannot be targeted
+  #Depends on "always_build"
 }
 ```
 
-`hidden`,`mandatory`,`unchecked` can be combined:
+`hidden`,`mandatory`,`unchecked` and `virtual` can be combined:
 ```ruby
 hidden unchecked target(:something){...}
 hidden mandatory target(:something2){...}
