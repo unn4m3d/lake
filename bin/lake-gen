@@ -61,7 +61,7 @@ end
 if Opts.install then
   puts "[INFO] Installing #{Opts.install}"
   file = Opts.install
-  Opts.out ||= File.basename(file,".erb")
+  Opts.out ||= File.basename(file)
   File.open(File.join(Dir.home,".lake-gen",Opts.out),"w"){
     |f|
     f.write File.read(file)
