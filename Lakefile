@@ -25,3 +25,9 @@ target "install", "all", "version" do
 end
 
 unchecked target "test","hidden_test"
+
+target "lake-#{define_version}.gem", :all
+
+virtual target(:push,"lake-#{define_version}.gem"){
+  system "gem push lake-#{define_version}.gem "
+}

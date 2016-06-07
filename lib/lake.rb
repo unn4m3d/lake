@@ -1,7 +1,7 @@
 $targets = {}
 
 module Lake
-  VERSION='0.1.5 Beta'
+  VERSION='0.1.6'
   Target = Struct.new(:name,:proc,:deps,:flags) do
     def build
       if need_build? then
@@ -30,7 +30,7 @@ module Lake
       if flags[:virtual] then
         return false
       else
-        return ! File.exists? name.to_s
+        return ! File.exists?(name.to_s)
       end
     end
   end
