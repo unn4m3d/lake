@@ -1,9 +1,40 @@
 Lake
 ==
 
-A lightweight Ruby task system
+A lightweight Ruby task system with a file generating system (`lake-gen`)
+ 
+Lake CLI usage
+--
 
-Examples
+```sh
+  # Print help
+  lake (-h|--help)
+  # List targets
+  lake (-T|--list)
+  # Build target <target> (default "all") from file <file> (default "Lakefile")
+  lake [(-f|--file) <file>] [<target>]
+  # Show code before building
+  lake [(-f|--file) <file>] (-l|--code) [<target>]
+```
+
+LakeGen CLI Usage
+--
+
+```sh
+  # Print help 
+  lake-gen (-h|--help)
+  # List templates
+  lake-gen (-l|--list)
+  # Get template from <url> (may be local or remote)
+  # Saves to <name> if specified
+  lake-gen (-i|--install) <url> [(-n|--name) <name>]
+  # Generate file from template <template>
+  # Saves to <name> if specified
+  # Args are passed to template
+  lake-gen [(-n|--name) <name>] <template> <arg1> ... <argN>
+```
+
+Lakefiles
 --
 
 ```ruby
@@ -38,7 +69,7 @@ hidden mandatory target(:something2){...}
   #And so on...
 ```
 
-Note you **MUST** use **brackets** and **curly braces** when using `hidden`,`mandatory` or `unchecked` due to Ruby syntactic rules
+Note you **MUST** use **brackets** and **curly braces** when using keywords due to Ruby syntactic rules
 
 Another way is using this words as follows :
 ```ruby
@@ -50,9 +81,17 @@ Another way is using this words as follows :
   unchecked :something
 ```
 
+LakeGen Templates
+--
+
+LakeGen Templates are just ERB templates, where command line arguments are passed as `vars`
+
+See [Lakefile.erb](Lakefile.erb) for more info
+ 
+
 Installing
 --
 
-Manual : `gem build lake.gemspec && gem install ./lake-0.1.2.gemspec`
-Automatic (works if previous version of lake is installed) : `lake install`
-From RubyGems : `gem install lake`
+* `gem build lake.gemspec && gem install ./lake-0.1.2.gemspec`
+* `git clone https://github.com/unn4m3d/lake && cd lake && lake install` (works with Lake installed)
+* `gem install lake`
