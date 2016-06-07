@@ -34,6 +34,7 @@ if File.exists? File.expand_path Lake::Opts.file
   eval code
 else
   puts "[FATAL] File not found"
+  exit 1
 end
 
 if Lake::Opts.list then
