@@ -1,14 +1,14 @@
 $targets = {}
 
 module Lake
-  VERSION='0.1.7'
+  VERSION='0.1.8'
   Target = Struct.new(:name,:proc,:deps,:flags) do
-    def build
+    def build(rec=true)
       if need_build? then
         puts "[INFO] Building #{name}"
         deps.each{
           |e|
-          $targets[e.to_s].build
+          $targets[e.to_s].build if rec or $targets[e.to_s].flags[:unchecked]
         }
         proc.call if proc
       else
@@ -35,17 +35,45 @@ module Lake
     end
   end
 
-  def build_t(t)
+  def calc_deps(t)
+    arr = []
+    puts "[INFO] Calculating dependencies for #{t}"
+    $targets[t.to_s].deps.each do
+      |d|
+      arr << d if $targets[d.to_s].need_build?
+      arr += calc_deps(d)
+    end
+    arr.uniq
+  end
+
+  def build_t(t,rec=false)
     $targets.each do
       |k,tr|
-      tr.build if tr.need_build? and tr.flags[:mandatory]
+      tr.build(rec) if tr.need_build? and tr.flags[:mandatory]
     end
 
-    if $targets[t] and not $targets[t].flags[:hidden]
-      $targets[t].build if $targets[t].need_build?
+    if rec then
+      if $targets[t] and not $targets[t].flags[:hidden]
+        $targets[t].build if $targets[t].need_build?
+      else
+        puts "[FATAL] No actions for target #{t}"
+      end
     else
-      puts "[FATAL] No actions for target #{t}"
+      deps = calc_deps(t)
+      deps.each{
+        |d|
+        if $targets[d.to_s] then
+          $targets[d.to_s].build rec
+        elsif File.exists? d.to_s then
+          puts "[INFO] File dependency #{d} satisfied"
+        else
+          puts "[FATAL] Cannot satisfy dependency #{d}"
+        end
+      }
     end
+
+
+
   end
 
   def target(name,*deps,&block)

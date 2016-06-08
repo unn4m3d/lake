@@ -2,7 +2,9 @@ Lake
 ==
 
 A lightweight Ruby task system with a file generating system (`lake-gen`)
- 
+
+**WARNING** This is unstable version, use `-r` key in case of compatibility errors
+
 Lake CLI usage
 --
 
@@ -15,13 +17,15 @@ Lake CLI usage
   lake [(-f|--file) <file>] [<target>]
   # Show code before building
   lake [(-f|--file) <file>] (-l|--code) [<target>]
+  # Use old recursive dependencies build behaviour
+  lake -r ...
 ```
 
 LakeGen CLI Usage
 --
 
 ```sh
-  # Print help 
+  # Print help
   lake-gen (-h|--help)
   # List templates
   lake-gen (-l|--list)
@@ -87,7 +91,7 @@ LakeGen Templates
 LakeGen Templates are just ERB templates, where command line arguments are passed as `vars`
 
 See [Lakefile.erb](Lakefile.erb) for more info
- 
+
 
 Installing
 --

@@ -5,7 +5,7 @@ require 'lake'
 
 class Lake::Opts
   class << self
-    attr_accessor :file,:target,:list,:show
+    attr_accessor :file,:target,:list,:show,:rec_build
   end
 end
 
@@ -18,6 +18,9 @@ OptionParser.new do |o|
   o.on("-v","--version","Print version and exit"){puts "Lake v #{Lake::VERSION}"; exit}
   o.on("-h","--help","Print this help"){puts o; exit}
   o.on("-l","--code","Show code before executing"){Lake::Opts.show=true}
+  o.on("-r","--recursive-build","Build dependencies recursively (Lake <= 0.1.7 compat mode)"){
+    Lake::Opts.rec_build = true
+  }
 end.parse!
 
 Lake::Opts.target = ARGV.pop || "all"
@@ -42,7 +45,7 @@ if Lake::Opts.list then
   puts "\t"+$targets.keys.select{|e|! $targets[e.to_s].flags[:hidden]}.join("\n\t")
 else
   puts "[INFO] Target is #{Lake::Opts.target}"
-  Lake::build_t Lake::Opts.target
+  Lake::build_t Lake::Opts.target, Lake::Opts.rec_build
 end
 
 puts "[INFO] Done!"
