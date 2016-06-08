@@ -1,6 +1,7 @@
 def g_v(path)
   ver = File.read(path).match(/\.version\s*=\s*['"](?<ver>[\d\.]+)['"]/)[:ver]
   puts "[INFO] Version is #{ver}"
+  ver
 end
 
 target :all do

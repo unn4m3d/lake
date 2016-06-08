@@ -1,0 +1,24 @@
+Gem::Specification.new do |s|
+  s.name        = '<%=vars.first.split(":").first%>'
+  s.version     = '<%=vars.shift.split(":").last%>'
+  s.licenses    = ['MIT']
+  s.summary     = "Lake - a Make-style build system"
+  s.description = "Lake - a Make-style build system with Ruby syntax"
+  s.authors     = [
+    <%for e in vars.select{|e| e.start_with? "+a"}%>
+    '<%=e[2..-1]%>'
+    <%end%>
+  ]
+  s.email       = '<%=vars.select{|e|e.start_with? ("+e")}.first[2..-1]%>'
+  s.files       = [
+    <%for e in vars.select{|e| e.start_with? "+f"}%>
+    '<%=e[2..-1]%>'
+    <%end%>
+  ]
+  s.homepage    = '<%=vars.select{|e|e.start_with? ("+p")}.first[2..-1]%>'
+  <%for e in vars.select{|e| !e.start_with?("+")} %>
+    s.add_runtime_dependency "<%=e.split(":").first%>" <%if e.split(":").size > 1%>,
+      <%= e.split(":")[1..-1].map{|e| "\"#{e}\""}.join(",") %>
+    <%end%>
+  <%end%>
+end
