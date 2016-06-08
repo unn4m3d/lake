@@ -98,4 +98,4 @@ Installing
 
 * `gem build lake.gemspec && gem install ./lake-0.1.2.gemspec`
 * `git clone https://github.com/unn4m3d/lake && cd lake && lake install` (works with Lake installed)
-* `gem install lake`
+* `gem install lake` 
