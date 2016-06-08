@@ -1,6 +1,10 @@
 Changelog
 ==
 
+v 0.1.7
+--
+* Added gemspec template
+
 v 0.1.5
 --
 * Added `lib/lake/utils.rb` with `Lake::Utils::lake_root`
