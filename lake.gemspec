@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'lake'
-  s.version     = '0.1.7'
+  s.version     = '0.1.9'
   s.licenses    = ['MIT']
   s.executables << "lake"
   s.executables << "lake-gen"
